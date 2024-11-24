@@ -1,10 +1,30 @@
 import { StrictMode } from 'react'
 import { createRoot } from 'react-dom/client'
+import Calendar from "./components/Calendar"
+
+
 import './index.css'
-import App from './App.tsx'
+import {
+  createBrowserRouter,
+  RouterProvider,
+} from "react-router-dom";
+import App from './App';
+import calendarLoader from './loaders/calendarLoader';
+
+const router = createBrowserRouter([
+  {
+    path: "/",
+    element: <App/>,
+  },
+  {
+    path: "/calendar/:gameId",
+    loader: calendarLoader,
+    element: <Calendar />,
+  },
+]);
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
-    <App />
+        <RouterProvider router={router} />
   </StrictMode>,
 )
