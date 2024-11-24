@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 import dayjs from "dayjs";
 
@@ -11,17 +11,22 @@ import { CalendarData } from "../loaders/calendarLoader";
 export default function Calendar() {
 
   const data = useLoaderData() as CalendarData;
-  const monthId = months.indexOf(data.limit_date.initial_month);
-  const year = data.limit_date.initial_year;
-  const month = getMonth(monthId, year);
-
+  const [currentMonthId, setCurrentMonthId] = useState(months.indexOf(data.limit_date.initial_month));
+  const [currentYear, setCurrentYear] = useState(Number(data.limit_date.initial_year));
+  const month = getMonth(currentMonthId, currentYear);
+  
+  
   const [currentDate, setCurrentDate] = useState<dayjs.Dayjs>(
-    dayjs().year(year).month(monthId).date(1)
+    dayjs().year(currentYear).month(currentMonthId).date(1)
   );
+
+  useEffect(()=>{
+    setCurrentDate( dayjs().year(currentYear).month(currentMonthId).date(1));
+  },[currentMonthId,currentYear])
 
   const generateCalendarEntries = () => {
     try {
-      const events = data.events[year][months[monthId]][currentDate.date()];
+      const events = data.events[currentYear][months[currentMonthId]][currentDate.date()];
 
       return Object.entries(events).map((value, index) => {
         return <CalendarEntry time={value[0]} task={value[1]} key={index} />;
@@ -30,6 +35,32 @@ export default function Calendar() {
       return;
     }
   };
+
+  const goToNextMonth = () =>{
+    if(currentYear === data.limit_date.last_year && months[currentMonthId] === data.limit_date.last_month) return;
+    
+    if(currentMonthId >= 11){ 
+      setCurrentMonthId(0);
+      setCurrentYear(currentYear + 1);
+      return;
+    }
+
+    setCurrentMonthId(currentMonthId + 1);
+    return;
+  }
+
+  const goToPreviousMonth = () =>{
+    if(currentYear === data.limit_date.initial_year && months[currentMonthId] === data.limit_date.initial_month) return;
+    
+    if(currentMonthId <= 0){ 
+      setCurrentMonthId(11);
+      setCurrentYear(currentYear - 1);
+      return;
+    }
+
+    setCurrentMonthId(currentMonthId - 1);
+    return;
+  }
 
   return (
     <div className={data.game+" "+"flex group flex-col items-center bg-secondary w-screen min-h-screen pb-5 font-persona3 overflow-hidden"}>
@@ -41,7 +72,8 @@ export default function Calendar() {
         <div className="flex gap-3 items-center group-[.p5]:lg:w-72 group-[.p5]:w-72 w-full max-w-3xl justify-between px-8 py-1 h-full rounded-lg group-[.p4]:bg-primary group-[.p5]:lg:ml-80">
           <button
             className="group-[.p5]:bg-black group-[.p5]:border-white group-[.p5]:border-solid group-[.p5]:border-4 group-[.p5]:p-1.5"
-          >
+            onClick={()=> goToPreviousMonth()}
+         >
             <img
               src="/arrow.svg"
               alt="previous moth"
@@ -51,9 +83,9 @@ export default function Calendar() {
           </button>
 
           <span className="group-[.p5]:hidden flex justify-between text-white text-xl lg:text-2xl font-medium w-32">
-            <span>{year}</span>
+            <span>{currentYear}</span>
             <span className="font-extrabold">/</span>
-            <span>{monthId + 1}</span>
+            <span>{currentMonthId + 1}</span>
           </span>
 
           <span className="hidden group-[.p5]:inline-block text-center uppercase w-16 group-[.p5]:w-20 text-secondary text-3xl font-extrabold bg-white">
@@ -62,6 +94,7 @@ export default function Calendar() {
 
           <button
             className="group-[.p5]:bg-black group-[.p5]:border-white group-[.p5]:border-solid group-[.p5]:border-4 group-[.p5]:p-1.5"
+            onClick={() => goToNextMonth()}
           >
             <img
               className="rotate-180"
