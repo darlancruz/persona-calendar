@@ -56,7 +56,7 @@ export default function Calendar() {
             <span>{monthId + 1}</span>
           </span>
 
-          <span className="hidden group-[.p5]:inline-block text-center uppercase w-16 text-secondary text-3xl font-extrabold bg-white">
+          <span className="hidden group-[.p5]:inline-block text-center uppercase w-16 group-[.p5]:w-20 text-secondary text-3xl font-extrabold bg-white">
             {dayjs(currentDate).format("MMM")}
           </span>
 
@@ -110,8 +110,8 @@ export default function Calendar() {
                             isSelectedDate
                               ? "bg-calendar-box-selected"
                               : "bg-calendar-bg"
-                          }` +
-                          " flex flex-col px-1 pb-1 items-center w-1/6 cursor-pointer"
+                          }` +" "+
+                          "group-[.p5]:px-2  flex flex-col px-1 pb-1 items-center w-1/6 cursor-pointer"
                         }
                         key={index}
                       >
