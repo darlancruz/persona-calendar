@@ -3,30 +3,24 @@ import { useState } from "react";
 import dayjs from "dayjs";
 
 import { getMonth } from "../lib/getMonth";
-import { days} from "../lib/utils"
+import { months, days} from "../lib/utils"
+import { useLoaderData } from "react-router-dom";
+import { CalendarData } from "../loaders/calendarLoader";
 
-interface Props {
-  game: string
-}
 
-export default function Page({game}:Props) {
-  const monthId = 2;
-  const year = 2024
+export default function Calendar() {
+
+  const data = useLoaderData() as CalendarData;
+  const monthId = months.indexOf(data.limit_date.initial_month);
+  const year = data.limit_date.initial_year;
   const month = getMonth(monthId, year);
 
   const [currentDate, setCurrentDate] = useState<dayjs.Dayjs>(
     dayjs().year(year).month(monthId).date(1)
   );
 
-  const getCalendarTheme = () => {
-    if (game === "p3p") return "";
-    if (game.includes("p3")) return "p3";
-    if (game.includes("p4")) return "p4";
-    if (game.includes("p5")) return "p5";
-  };
-
   return (
-    <div className={getCalendarTheme()+" "+"flex group flex-col items-center bg-secondary w-screen min-h-screen pb-5 font-persona3 overflow-hidden"}>
+    <div className={data.game+" "+"flex group flex-col items-center bg-secondary w-screen min-h-screen pb-5 font-persona3 overflow-hidden"}>
       <header className="group-[.p4]:p4_header group-[.p5]:lg:absolute flex flex-col md:flex-row group-[.p5]:justify-center lg:justify-center items-center h-auto mb-4 w-full bg-primary group-[.p5]:lg:bg-transparent group-[.p5]:bg-white p-2 z-20 group-[.p5]:-rotate-2 relative">
         <p className="group-[.p5]:hidden flex items-center justify-center w-full lg:w-4/5 h-full font-extrabold text-center max-w-2xl text-calendar-title text-2xl lg:text-5xl lg:leading-none uppercase group-[.p4]:capitalize">
           Calendar
