@@ -19,6 +19,18 @@ export default function Calendar() {
     dayjs().year(year).month(monthId).date(1)
   );
 
+  const generateCalendarEntries = () => {
+    try {
+      const events = data.events[year][months[monthId]][currentDate.date()];
+
+      return Object.entries(events).map((value, index) => {
+        return <CalendarEntry time={value[0]} task={value[1]} key={index} />;
+      });
+    } catch {
+      return;
+    }
+  };
+
   return (
     <div className={data.game+" "+"flex group flex-col items-center bg-secondary w-screen min-h-screen pb-5 font-persona3 overflow-hidden"}>
       <header className="group-[.p4]:p4_header group-[.p5]:lg:absolute flex flex-col md:flex-row group-[.p5]:justify-center lg:justify-center items-center h-auto mb-4 w-full bg-primary group-[.p5]:lg:bg-transparent group-[.p5]:bg-white p-2 z-20 group-[.p5]:-rotate-2 relative">
@@ -154,14 +166,7 @@ export default function Calendar() {
             <span>({days[currentDate.get("day")]})</span>
           </header>
           <div className="z-10 flex flex-col gap-2 capitalize group-[.p5]:lg:ml-24 group-[.p5]:lg:mt-16">
-          <div className="flex flex-col w-full text-txt relative">
-      <span className="font-extrabold drop-shadow-p3 lg:text-xl group-[.p4]:text-white group-[.p5]:text-white z-10  group-[.p5]:-rotate-1  group-[.p5]:lg:text-2xl">
-        Teste      </span>
-      <div className="hidden group-[.p5]:inline absolute bg-secondary w-screen h-4 left-3 top-3 lg:top-5" />
-      <span className="font-bold border-primary border-solid group-[.p5]:border-none border-l-8 border-b-2 p-1 px-3 lg:text-lg z-10">
-       TEste
-      </span>
-    </div>
+            {generateCalendarEntries()}
           </div>
         </section>
       </div>
@@ -169,6 +174,20 @@ export default function Calendar() {
   );
 }
 
+function CalendarEntry({ time, task }: { time: string; task: string }) {
+  const removeUnderscore = (value: string) => {
+    return value.replace("_", " ");
+  };
 
-
-
+  return (
+    <div className="flex flex-col w-full text-txt relative">
+      <span className="font-extrabold drop-shadow-p3 lg:text-xl group-[.p4]:text-white group-[.p5]:text-white z-10  group-[.p5]:-rotate-1  group-[.p5]:lg:text-2xl">
+        {removeUnderscore(time)}
+      </span>
+      <div className="hidden group-[.p5]:inline absolute bg-secondary w-screen h-4 left-3 top-3 lg:top-5" />
+      <span className="font-bold border-primary border-solid group-[.p5]:border-none border-l-8 border-b-2 p-1 px-3 lg:text-lg z-10">
+        {task}
+      </span>
+    </div>
+  );
+}
